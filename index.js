@@ -4,6 +4,7 @@ const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 3000;
 const gameRouter = require("./routes/game");
+const cookieParser = require("cookie-parser");
 const { Redis } = require("ioredis");
 
 const redis = new Redis({
@@ -17,6 +18,7 @@ redis.on("connect", () => {
 });
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(
     cors({
         origin: "*",
@@ -25,6 +27,21 @@ app.use(
 );
 
 app.use("/", gameRouter);
+app.get("/set-cookie", (req, res) => {
+    const options = {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
+    };
+    res.cookie("myCookie", "cookieValue", options);
+    res.send("Cookie has been set!");
+});
+
+app.get("/get-cookie", (req, res) => {
+    const myCookie = req.cookies.myCookie;
+    res.send(`Cookie value: ${myCookie}`);
+});
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
