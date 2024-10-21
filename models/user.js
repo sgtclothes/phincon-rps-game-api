@@ -24,14 +24,14 @@ module.exports = (sequelize, DataTypes) => {
             });
             models.User.hasOne(models.Match, {
                 foreignKey: "mc_player_one",
-                as: "match",
+                as: "match_player_one",
                 timestamps: false,
                 onUpdate: "CASCADE",
                 onDelete: "CASCADE",
             });
             models.User.hasOne(models.Match, {
                 foreignKey: "mc_player_two",
-                as: "match",
+                as: "match_player_two",
                 timestamps: false,
                 onUpdate: "CASCADE",
                 onDelete: "CASCADE",
