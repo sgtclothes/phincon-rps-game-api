@@ -1,0 +1,37 @@
+{
+    "development": {
+        "username": "rps_game_user",
+        "password": "Ob7Thlu7UZ6cQyJ2itU8DAX7gEXdvGJ4",
+        "database": "rps_game",
+        "host": "dpg-csbddljtq21c7390t3r0-a.oregon-postgres.render.com",
+        "dialect": "postgres",
+        "port": 5432,
+        "dialectOptions": {
+            "ssl": {
+                "require": true,
+                "rejectUnauthorized": false
+            }
+        }
+    },
+    "test": {
+        "username": "root",
+        "password": null,
+        "database": "database_test",
+        "host": "127.0.0.1",
+        "dialect": "mysql"
+    },
+    "production": {
+        "username": "rps_game_user",
+        "password": "Ob7Thlu7UZ6cQyJ2itU8DAX7gEXdvGJ4",
+        "database": "rps_game",
+        "host": "dpg-csbddljtq21c7390t3r0-a.oregon-postgres.render.com",
+        "dialect": "postgres",
+        "port": 5432,
+        "dialectOptions": {
+            "ssl": {
+                "require": true,
+                "rejectUnauthorized": false
+            }
+        }
+    }
+}
