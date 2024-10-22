@@ -18,10 +18,11 @@ const registerUser = async (req, res) => {
             us_active: false,
         });
         const verificationToken = generateToken(newUser.us_id, newUser.us_email, process.env.JWT_EXPIRES_IN);
+        
         await Token.create({
             tkn_type: "REGISTER",
             tkn_value: verificationToken,
-            tkn_description: `Register token user created and sent to ${email}`,
+            tkn_description: `Register token user created`,
             tkn_client_ip: (await getClientIP()).ip,
             tkn_client_agent: new Navigator().userAgent,
             tkn_us_id: newUser.us_id,
