@@ -15,10 +15,10 @@ const registerUser = async (req, res) => {
             us_email: email,
             us_phone_number: phoneNumber,
             us_password: await bcrypt.hash(password, 10),
-            us_active: false,
+            us_active: true,
         });
         const verificationToken = generateToken(newUser.us_id, newUser.us_email, process.env.JWT_EXPIRES_IN);
-        
+
         await Token.create({
             tkn_type: "REGISTER",
             tkn_value: verificationToken,
@@ -111,7 +111,8 @@ const loginUser = async (req, res) => {
         });
         delete user.dataValues.us_password;
         user.dataValues.token = loginToken;
-        await redis.set("user", JSON.stringify(user), "EX", seconds);
+        await redis.set(`user:${user.us_id}:data`, JSON.stringify(user), "EX", seconds);
+        res.cookie("userId", user.us_id, { maxAge: milliseconds });
         return res.status(200).send({
             code: 200,
             message: "User successfully logged in!",
@@ -123,12 +124,14 @@ const loginUser = async (req, res) => {
 
 const logoutUser = async (req, res) => {
     try {
-        const user = await redis.get("user");
+        const { userId } = req.cookies;
+        const user = await redis.get(`user:${userId}:data`);
         if (user) {
             const { token } = JSON.parse(user);
             await Token.update({ tkn_active: false }, { where: { tkn_value: token } });
         }
-        await redis.del("user");
+        await redis.del(`user:${userId}:data`);
+        res.clearCookie('userId');
         return res.status(200).send({
             code: 200,
             message: "User successfully logged out!",

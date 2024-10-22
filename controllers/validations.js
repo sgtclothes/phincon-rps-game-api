@@ -1,5 +1,29 @@
 const Joi = require("joi");
 const { User } = require("../models");
+const redis = require("./redis");
+const jwt = require("jsonwebtoken");
+
+const checkLoginUser = async (req, res, next) => {
+    const { userId } = req.cookies;
+    const user = await redis.get(`user:${userId}:data`);
+    if (!user) {
+        return res.status(400).json({
+            code: 401,
+            message: "Please login first",
+            status: "failed",
+        });
+    }
+    const token = JSON.parse(user).token;
+    if (!token) {
+        return res.status(401).json({ code: 401, message: "Token not found", status: "failed" });
+    }
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ code: 401, message: "Invalid Token", status: "failed" });
+        }
+        next();
+    });
+};
 
 const validateRegisterUser = (req) => {
     const schema = Joi.object({
@@ -18,7 +42,7 @@ const validateRegisterUser = (req) => {
     });
     const validationError = schema.validate(req.body).error;
     return validationError;
-}
+};
 
 const bodyValidationRegister = (req, res, next) => {
     const validation = validateRegisterUser(req);
@@ -64,4 +88,4 @@ const checkDuplicates = async (req, res, next) => {
     }
 };
 
-module.exports = { bodyValidationRegister, checkDuplicates, validateRegisterUser };
+module.exports = { bodyValidationRegister, checkDuplicates, validateRegisterUser, checkLoginUser };
